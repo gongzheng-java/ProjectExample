@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="NewLocationWizard">
+		<list key="ConfigurationWizardMainPage.STORE_URL_ID">
+			<item value="https://120.26.227.106:8443/svn/BPM_SZ_PH/web"/>
+			<item value="http://svn.appcan.cn/sourceCode/115/511/51/trunk"/>
+		</list>
+	</section>
+</section>

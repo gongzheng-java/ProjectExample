@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 如果使用代理模式 ，则命名空间的值和对应接口的全局限定名 必须一致,并且接口方法的名字要和sql语句的ID对应一致 -->
+<!-- 如果没有使用代理模式（原生），则命名空间的值可以任意 -->
+<mapper namespace="com.yichuan.daoproxy.UserDao">
+
+	<!-- 查询所有user信息 -->
+	<select id="findList" resultType="User">
+		SELECT * FROM users
+	</select>
+
+	<!-- 如果参数类型parameterType是普通数据类型，那么SQL中的#{}参数名可以任意； 如果参数是对象，那么参#{}数名称必须和对象属性名一致 -->
+	<select id="findUser" parameterType="int" resultType="User">
+		SELECT * FROM users u WHERE u.id=#{id}
+		
+	</select>
+
+
+	<!-- 根据用户名模糊查询用户信息 -->
+	<!-- 注意：如果使用${}，那么参数名必须是value。使用${}有sql注入的风险，故不推荐使用该方法 -->
+	<select id="findName" parameterType="string" resultType="User">
+		<!-- SELECT * FROM USER u WHERE u.username LIKE "%${value}%" -->
+		SELECT * FROM users u WHERE u.username LIKE #{name}
+	</select>
+
+
+	<!-- 新增user -->
+	<!-- 主键id是自增，但是参数中不能省去，否则报错 -->
+	<insert id="saveUser" parameterType="User">
+		<!-- <selectKey></selectKey>用于返回插入数据的主键 SELECT LAST_INSERT_ID() sql语句用于得到执行insert操作后的主键值 
+			keyProperty ：将得到的主键值赋值到对象的指定的属性中， order ：相对于insert语句的执行顺序 -->
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO users
+		VALUES(#{id},#{userName},#{birthday},#{sex},#{address})
+	</insert>
+
+	<!-- 删除用户 -->
+	<delete id="deleteUser" parameterType="int">
+		DELETE FROM users WHERE id=#{ID}
+	</delete>
+
+	<!-- 更新user信息 用set处理逗号“，”问题 -->
+	<update id="updateUser" parameterType="User">
+		UPDATE users
+		<set>
+			<if test="userName != null">
+				username=#{userName},
+			</if>
+			<if test="birthday != null">
+				birthday =#{birthday},
+			</if>
+			<if test="sex != null">
+				sex=#{sex},
+			</if>
+			<if test="address != null">
+				address=#{address}
+			</if>
+		</set>
+		WHERE users.`id`=#{id}
+	</update>
+
+	<!-- 更新user信息 用trim处理逗号“，”问题 -->
+	<update id="updateUser2" parameterType="User">
+		UPDATE users
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="userName != null">
+				username=#{userName},
+			</if>
+			<if test="birthday != null">
+				birthday =#{birthday},
+			</if>
+			<if test="sex != null">
+				sex=#{sex},
+			</if>
+			<if test="address != null">
+				address=#{address}
+			</if>
+		</trim>
+		WHERE users.`id`=#{id}
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

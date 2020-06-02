@@ -1,0 +1,3 @@
+该项目是：学生管理系统  是学习SSM框架所做的示例项目
+
+使用技术：前端框架 mybatis mysql  springMVC spring maven 

@@ -1,0 +1,10 @@
+<classpath>
+  <container id="SpringMVC!org.eclipse.jst.j2ee.internal.web.container">
+    <entry id="D:/Mybatis&springMVC Space/SpringMVC/WebRoot/WEB-INF/lib/mybatis-spring-1.2.2.jar">
+      <source-attachment-path>/SpringMVC/WebRoot/WEB-INF/lib/mybatis-spring-1.2.2-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="D:/Mybatis&springMVC Space/SpringMVC/WebRoot/WEB-INF/lib/spring-web-3.2.0.RELEASE.jar">
+      <source-attachment-path>/SpringMVC/WebRoot/WEB-INF/lib/spring-web-3.2.0.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+  </container>
+</classpath>

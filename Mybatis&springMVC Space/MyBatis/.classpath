@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="config"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry excluding="src/|config/|test/|logs/" kind="src" path=""/>
+	<classpathentry kind="src" path="logs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lib"/>
+	<classpathentry kind="lib" path="src/lib/asm-3.3.1.jar"/>
+	<classpathentry kind="lib" path="src/lib/cglib-2.2.2.jar"/>
+	<classpathentry kind="lib" path="src/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="src/lib/javassist-3.17.1-GA.jar"/>
+	<classpathentry kind="lib" path="src/lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="src/lib/log4j-api-2.0-beta9.jar"/>
+	<classpathentry kind="lib" path="src/lib/log4j-core-2.0-beta9.jar"/>
+	<classpathentry kind="lib" path="src/lib/mybatis-3.2.3.jar" sourcepath="D:/龚正/Java jar包/SSH/myBatis/mybatis-3.2.3/mybatis-3.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="src/lib/slf4j-api-1.7.5.jar"/>
+	<classpathentry kind="lib" path="src/lib/slf4j-log4j12-1.7.5.jar"/>
+	<classpathentry kind="lib" path="src/lib/mysql-connector-java-5.1.6.jar"/>
+	<classpathentry kind="lib" path="src/lib/ehcache-core-2.6.8.jar"/>
+	<classpathentry kind="lib" path="src/lib/mybatis-ehcache-1.0.3.jar" sourcepath="D:/龚正/Java jar包/新增jar/mybatis-ehcache-1.0.3源码/ehcache-cache-mybatis-ehcache-1.0.3/src/main/java"/>
+	<classpathentry kind="lib" path="src/lib/c3p0-0.9.2.1.jar"/>
+	<classpathentry kind="lib" path="src/lib/c3p0-oracle-thin-extras-0.9.2.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

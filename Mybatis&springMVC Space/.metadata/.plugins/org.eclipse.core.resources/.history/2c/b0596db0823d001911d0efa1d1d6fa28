@@ -1,0 +1,45 @@
+
+package com.yichuan.controller.upload;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/** 
+  *
+  * @Author  gongzheng
+  * @CreateDate  2019年3月3日 下午3:04:36 
+  * @Description  
+  */
+@Controller
+@RequestMapping("")
+public class UploadController {
+	RequestMapping("fileupload")
+	 public void fileupload(HttpServletRequest request,HttpServletResponse response,String loginName) throws Exception {
+	     //获取服务器中保存文件的路径
+	  String path = request.getSession().getServletContext().getRealPath("")+"\\upload\\record\\";
+	  System.out.println(path);
+	   //获取解析器  
+	     CommonsMultipartResolver resolver = new CommonsMultipartResolver(request.getSession().getServletContext());  
+	     //判断是否是文件  
+	     if(resolver.isMultipart(request)){  
+	         //进行转换  
+	         MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest)(request);  
+	         //获取所有文件名称  
+	         Iterator<String> it = multiRequest.getFileNames();  
+	         while(it.hasNext()){  
+	             //根据文件名称取文件  
+	             MultipartFile file = multiRequest.getFile(it.next());  
+	             String fileName = file.getOriginalFilename();  
+	             String localPath = path + fileName;  
+	             //创建一个新的文件对象，创建时需要一个参数，参数是文件所需要保存的位置
+	             File newFile = new File(localPath);  
+	             if (newFile.getParentFile() != null || !newFile.getParentFile().isDirectory()) {
+	                // 创建父文件夹
+	                newFile.getParentFile().mkdirs();
+	             }
+	　　　　　　　　//上传的文件写入到指定的文件中   
+	　　　　　　　　file.transferTo(newFile); 　　
+	　　　　　　}
+	 }
+
+}

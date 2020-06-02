@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 如果使用代理模式 ，则命名空间的值和对应接口的全局限定名 必须一致,并且接口方法的名字要和sql语句的ID对应一致 -->
+<!-- 如果没有使用代理模式（原生），则命名空间的值可以任意 -->
+<mapper namespace="com.yichuan.dao.ItemDao">
+
+	<!-- 定义商品查询的sql片段，即查询商品的条件，动态查询 -->
+	<!-- 通过包装类ItemVo中的itemCustom对象传递查询条件 -->
+	<sql id="find_item_where">
+		<where>
+			<if test="itemCustom != null">
+				<if test="itemCustom.name != null and itemCustom.name != ''">
+					items.name like "%${itemCustom.name}%"
+				</if>
+				<if test="itemCustom.price != null">
+					and items.price LIKE "%${itemCustom.price}%"
+				</if>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 根据条件查询商品信息 -->
+	<select id="findItems" parameterType="ItemVo" resultType="ItemCustom">
+		SELECT * FROM items
+			<include refid="find_item_where" />
+	</select>
+
+   <!-- 测试按照时间查询商品信息 -->
+   <select id="testTime" parameterType="Item" resultType="Item">
+		SELECT * FROM items i WHERE  i.createTime LIKE #{createTime};
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

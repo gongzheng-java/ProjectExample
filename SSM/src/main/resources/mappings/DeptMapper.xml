@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--注意:此处是根据命名空间的值找到dao接口的，因此必须要与dao接口的全局限定名对应 映射文件中sql语句的id也要与dao接口中的方法名对应，否则会报错 -->
+<mapper namespace="com.yichuan.dao.DeptDao">
+
+
+	<resultMap type="com.yichuan.entity.Dept" id="DeptMap">
+		<id column="id" property="id" />
+		<result column="dname" property="dname" />
+	</resultMap>
+
+	<!-- 获取所有部门信息 -->
+	<select id="queryDept" resultType="Dept">
+		select d.id,d.dname from Dept d
+	</select>
+
+
+
+
+
+
+
+
+
+
+</mapper>

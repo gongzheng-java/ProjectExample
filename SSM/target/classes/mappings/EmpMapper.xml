@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--注意:此处是根据命名空间的值找到dao接口的，因此必须要与dao接口的全局限定名对应 映射文件中sql语句的id也要与dao接口中的方法名对应，否则会报错 -->
+<mapper namespace="com.yichuan.dao.EmpDao">
+
+	<!-- 关联查询部门信息的影射关系 -->
+	<resultMap type="com.yichuan.entity.Emp" id="empWithDept">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="age" property="age" />
+		<result column="gender" property="gender" />
+		<result column="email" property="email" />
+		<result column="deptNo" property="deptNo" />
+		<association property="dept" javaType="com.yichuan.entity.Dept">
+			<id column="id" property="id" />
+			<result column="dname" property="dname" />
+		</association>
+	</resultMap>
+	
+
+	<sql id="queryEmpAndDept">
+		e.id,e.name,e.age,e.gender,e.email,e.deptNo,d.id,d.dname
+	</sql>
+	<sql id="Emp">
+		e.id,e.name,e.age,e.gender,e.email,e.deptNo
+	</sql>
+	
+	<!-- 根据id查询单个员工信息 -->
+	<select id="queryEmp" resultMap="empWithDept" parameterType="int">
+	select
+		<include refid="Emp" />
+		FROM emp e where e.id=#{id}
+	</select>
+
+	<!-- 根据id查询带有部门信息的单个员工信息 -->
+	<select id="queryWithDept" resultMap="empWithDept"
+		parameterType="int">
+		select
+		<include refid="queryEmpAndDept" />
+		FROM emp e LEFT JOIN dept d ON e.deptNo=d.id
+		where e.id=#{id}
+	</select>
+	
+	
+
+	<!-- 分页查询带有部门信息的所有员工信息集合 -->
+	<select id="queryEmpWithDept" resultMap="empWithDept">
+		select
+		<include refid="queryEmpAndDept" />
+		FROM emp e LEFT JOIN dept d ON e.deptNo=d.id
+	</select>
+
+
+	<!-- 批量插入 -->
+	<insert id="addEmps" parameterType="java.util.List">
+		INSERT INTO emp(name,age,email,deptNo) VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.name},
+			#{item.age},
+			#{item.email},
+			#{item.deptNo}
+			)
+		</foreach>
+	</insert>
+
+	<!-- 新增员工 -->
+	<!-- useGeneratedKeys="true"把新增加的主键赋值到自己定义的keyProperty（id）中 -->
+	<!-- useGeneratedKeys 取值范围true|false 默认值是：false。 含义：设置是否使用JDBC的getGenereatedKeys方法获取主键并赋值到keyProperty设置的领域模型属性中。 -->
+	<insert id="saveEmp" parameterType="Emp" useGeneratedKeys="true"
+		keyProperty="id">
+
+		INSERT INTO EMP(NAME,age,email,deptNo,gender)
+		VALUES
+		(
+		#{name,jdbcType=VARCHAR},
+		#{age,jdbcType=INTEGER},
+		#{email,jdbcType=VARCHAR},
+		#{deptNo,jdbcType=INTEGER},
+		#{gender,jdbcType=CHAR}
+		)
+	</insert>
+
+	<!-- 查找指定姓名所对应的人数 -->
+	<select id="countEmp" parameterType="string" resultType="int">
+       SELECT COUNT(1) FROM emp WHERE emp.`name`=#{name}
+	</select>
+	
+	<!-- 修改员工信息 -->
+	<update id="updateEmp" parameterType="Emp" >
+	UPDATE emp SET 
+	   emp.`age`=#{age},
+	   emp.`gender`=#{gender},
+	   emp.`email`=#{email},
+	   emp.`deptNo`=#{deptNo},
+	 WHERE emp.`id`=#{id}
+	</update>
+
+
+
+</mapper>

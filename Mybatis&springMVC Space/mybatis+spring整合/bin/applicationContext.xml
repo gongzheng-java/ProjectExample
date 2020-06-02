@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/jdbc 
+		http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+		http://www.springframework.org/schema/jee 
+		http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-3.2.xsd
+		http://www.springframework.org/schema/task 
+		http://www.springframework.org/schema/task/spring-task-3.2.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd"
+	default-lazy-init="true">
+
+
+
+	<!-- *************使用 jdbc定义数据源（该配置可以）-->
+	  <bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean> 
+	
+	
+	<!-- 加载数据配连接配置文件 -->
+	<context:property-placeholder location="config.properties" />
+	
+	<!-- 加载配置文件 创建 SqlSessionFactory对象-->
+	<bean id="SqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 加载数据源 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 引入mybatis映射文件 -->
+		<property name="mapperLocations" value="mappings/*.xml"></property>
+		<!-- 引入mybatis主配置文件 -->
+		<property name="configLocation" value="mybatis-config.xml"></property>
+	</bean>
+
+
+	<!-- 给userDao的实现类注入SqlSessionFactory （该配置是给原生dao接口开发模式使用）-->
+	<bean id="UserDao" class="com.yichuan.dao.impl.UserDaoImpl">
+		<property name="sqlSessionFactory" ref="SqlSessionFactory"></property>
+	</bean>
+	
+	<!-- 配置代理模式开发dao接口 -->
+	<!-- 下面的MapperFactoryBean和 MapperScannerConfigurer配置二选一  前者为单个接口生成代理对象，后者是为包中的所有接口生成代理对象-->
+	<!-- MapperFactoryBean类可以根据mapper接口生成代理对象 -->
+	<!--   <bean id="UserDaoProxy" class="org.mybatis.spring.mapper.MapperFactoryBean">
+	  mapperInterface是指定mapper接口的全局限定名 
+		<property name="mapperInterface" value="com.yichuan.daoproxy.UserDao"/>
+		<property name="sqlSessionFactory" ref="SqlSessionFactory"/>
+	</bean> -->
+	
+    <!-- 配置扫描器，扫描dao接口所在的包名，自动创建代理对象并注入到ioc容器中，自动扫描出了mapper的bean的id为接口的类名（首字母小写） -->
+	<bean  class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="SqlSessionFactory" />
+		<!-- 如果扫描多个包，每个包名之间使用半角逗号分隔 -->
+		<property name="basePackage" value="com.yichuan.daoproxy" />
+	</bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</beans>
+	

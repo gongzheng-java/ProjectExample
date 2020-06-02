@@ -1,0 +1,13 @@
+
+package com.yichuan.controller;
+
+
+ /** 
+  *
+  * @Author  gongzheng
+  * @CreateDate  2019年3月2日 下午9:08:45 
+  * @Description  
+  */
+public class UploadController {
+
+}

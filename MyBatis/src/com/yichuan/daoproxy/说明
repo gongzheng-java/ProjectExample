@@ -1,0 +1,2 @@
+说明：该包中dao接口是使用代理模式开发，所以配置文件的命名空间值和接口的全局限定名一致，sql语句的ID必须和接口中的放大名保持一致
+     该包的测试类在text.com.yichuan.daoproxy中，对应的映射文件是：OrdersCustomMapper.xml

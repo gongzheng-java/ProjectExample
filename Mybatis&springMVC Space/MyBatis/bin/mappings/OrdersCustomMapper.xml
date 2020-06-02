@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 如果使用代理模式 ，则命名空间的值和对应接口的全局限定名 必须一致,并且接口方法的名字要和sql语句的ID对应一致 -->
+<!-- 如果没有使用代理模式（原生），则命名空间的值可以任意 -->
+<mapper namespace="com.yichuan.daoproxy.OrdersDao">
+
+
+	<!-- 将查询结果映射到orders类中，而不是拓展类（两表联合查询） type是实体类全局限定名 此处使用别名 -->
+	<resultMap type="Orders" id="OrdersWithUserResultMap">
+		<!-- 映射orders类本身信息 -->
+		<!-- column指定的是数据库表字段，property指定的是对应实体类属性 -->
+		<id column="id" property="id" />
+		<result column="userId" property="userId" />
+		<result column="number" property="number" />
+		<result column="createTime" property="createTime" />
+		<result column="note" property="note" />
+		<!-- 映射关联查询的user类信息 此处的多对一映射 orders多user一，一个订单编号只能查询出一个对应的user信息 -->
+		<!-- property指定将联合查询的User类对象信息映射到orders的哪个属性， javaType指定该属性的类型，即全局限定名，此处使用别名 -->
+		<association property="user" javaType="User">
+			<id column="id" property="id" />
+			<result column="userName" property="userName" />
+			<result column="birthday" property="birthday" />
+			<result column="sex" property="sex" />
+			<result column="address" property="address" />
+		</association>
+	</resultMap>
+	
+	<!-- 在类中创建类对象user联合查询订单和用户信息，使用resultMap映射结果集 -->
+	<select id="queryOrdersWithUsers" resultMap="OrdersWithUserResultMap">
+		SELECT
+		o.`id`,
+		o.`number`,
+		o.`createTime`,
+		o.`note`,
+		o.`userId`,
+		u.username,
+		u.sex,
+		u.birthday,
+		u.`address`
+		FROM users u ,orders o WHERE u.id=o.userId
+	</select>
+	
+<!-- ************************************************************************************************************************************* -->
+	<!-- 将查询结果映射到orders类中，而不是拓展类（三表联合查询)。使用继承，省略重复映射的部分 -->
+	<resultMap type="Orders" id="OrdersWithUserWithOrderDatailResultMap" extends="OrdersWithUserResultMap">
+		<!-- 映射orders类本身信息 -->
+		<!-- 映射user信息 -->
+		<!-- 订单明细映射（一对多映射）： 一个订单关联对应多条明细 。
+		注意：此处sql语句查询结果id有重复的，所以需要将查询出的orderDatail的id指定别名，留心对应的sql语句 -->
+		<collection property="orderDatails" ofType="OrderDatail">
+			<id column="orderdatailID" property="id" />
+			<result column="orderId" property="orderId" />
+			<result column="itemsID" property="itemsID" />
+			<result column="itemsNum" property="itemsNum" />
+		</collection>
+	</resultMap>
+
+	<!-- 在类中创建user和orderDatail对象，联合查询订单、用户、订单明细等信息，使用resultMap映射结果集 -->
+	<select id="OrdersWithUserWithOrderDatail" resultMap="OrdersWithUserWithOrderDatailResultMap">
+		SELECT
+		o.`id`,
+		o.`number`,
+		o.`createTime`,
+		o.`note`,
+		o.`userId`,
+		u.username,
+		u.sex,
+		u.birthday,
+		u.`address`,
+		od.id AS orderdatailID,
+		od.orderId ,
+		od.itemsID,
+		od.ItemsNum
+		FROM users u ,orders o,orderDatail od
+		WHERE
+		u.id=o.userId AND o.Id=od.orderId
+		ORDER BY o.Id
+	</select>
+	
+<!-- ************************************************************************************************************************************* -->
+	<!-- 联合查询订单和用户信息，使用拓展类来映射resultType映射结果集 -->
+	<select id="queryOrdersWithUserList" resultType="OrdersCustom">
+		SELECT
+		o.`id`,
+		o.`number`,
+		o.`createTime`,
+		o.`note`,
+		o.`userId`,
+		u.username,
+		u.sex,
+		u.birthday,
+		u.`address`
+		FROM users u ,orders o WHERE u.id=o.userId
+	</select>
+
+<!-- ************************************************************************************************************************************* -->
+	<!-- 下面是四表连接查询，“查询用户和其购买的商品信息”，数据库中用户和商品表之间没有直接联系，所以使用订单表和明细表作为中间的间接关系 -->
+	<!-- 映射思路：1.(以user为主表查询)在user类中添加订单属性list<orders> orders(user和orders是一对多关系) -->
+	<!-- 2.在订单类orders中添加订单明细属性list<orderDatail> oDatails (orders和orderDatail是一对多关系) -->
+	<!-- 3.在订单明细表orderdatail类中添加商品属性Item item （orderDatail和item是多对一关系） -->
+
+	<resultMap type="User" id="UserWithItemResultMap">
+		<!-- 映射用户信息 -->
+		<id column="id" property="id" />
+		<result column="username" property="userName" />
+		<result column="sex" property="sex" />
+		<result column="birthday" property="birthday" />
+		<result column="address" property="address" />
+
+		<!-- 映射订单信息（user和orders 一对多映射）property指定映射到list集合哪个属性名 ofType指定属性类型 -->
+		<collection property="orders" ofType="Orders">
+			<id column="orderId" property="id" />
+			<result column="number" property="number" />
+			<result column="createTime" property="createTime" />
+			<result column="note" property="note" />
+
+			<!-- 映射订单明细信息（orders和orderDatail 一对多映射） -->
+			<collection property="orderDatails" ofType="OrderDatail">
+				<id column="orderdatailID" property="id" />
+				<result column="orderId" property="orderId" />
+				<result column="itemsID" property="itemsID" />
+				<result column="itemsNum" property="itemsNum" />
+
+				<!-- 映射商品信息（OrderDatail和Item 多对一映射） -->
+				<association property="item" javaType="Item">
+					<id column="itemId" property="id" />
+					<result column="name" property="name" />
+					<result column="price" property="price" />
+					<result column="createTime" property="createTime" />
+				</association>
+			</collection>
+		</collection>
+	</resultMap>
+
+	<!-- 查询用户和其购买的商品信息。注意：查询结果会出现重复的id名称(不是id值重复)，所以其余三个表的主键id都指定别名，用于resultMap映射，否则会报错 -->
+	<select id="findUserWithItem" resultMap="UserWithItemResultMap">
+	SELECT
+		u.`id`,
+		u.username,
+		u.sex,
+		u.birthday,
+		u.`address` ,
+		o.`id` AS orderId,
+		o.`number` ,
+		o.`createTime` ,
+		o.`note` ,
+		od.id AS orderdatailID,
+		od.orderId ,
+		od.itemsID,
+		od.itemsNum ,
+		i.id AS itemId,
+		i.name ,
+		i.price ,
+		i.createTime
+	FROM users u ,
+	     orders o,
+	     orderDatail od,
+	     items i
+	WHERE u.id=o.userId AND o.Id=od.orderId AND od.`itemsID`=i.id
+	ORDER BY u.Id
+	</select>
+	
+<!-- ************************************************************************************************************************************* -->
+	<!-- 缓存查询（延迟加载）：查询订单信息，通过延迟加载关联查询出用户信息 -->
+	<resultMap type="Orders" id="findOrderLazyloadingResultMap">
+		<id column="id" property="id" />
+		<result column="userId" property="userId" />
+		<result column="number" property="number" />
+		<result column="createTime" property="createTime" />
+		<result column="note" property="note" />
+		<!-- 实现用户延迟加载配置,注意：需要在mybatis主配置文件中配置开启 -->
+		<!-- select: 指定延迟加载所需要执行的sql语句的id(若指定的sql语句在另一个映射文件中，那么需要指定另一个映射文件的 命名空间.SQLid)；
+		     column： 指定关联的外键 -->
+		     <!-- 此处是多对一配置，一对多collection延迟加载与此同理。 -->
+		<association property="user" javaType="User" select="com.yichuan.dao.UserDao.findUser" column="userId">
+		</association>
+	</resultMap>
+
+	<select id="findOrderWithUserLazyloading" resultMap="findOrderLazyloadingResultMap">
+		SELECT * FROM orders
+	</select>
+	
+<!-- ************************************************************************************************************************************* -->
+   <!-- 开启本mapper的二级缓存（开启二级缓存需要在主配置文件中设置总开关，还需要在具体的映射文件中开启），所执行的SQL语句会存储到该二级缓存中（HashMap） -->
+   <!-- type：指定Cache接口实现的类，实现mybatis与ehcache的整合；如果不指定任何属性，就是一个<cache/>标签，那么使用的是mybatis自己的二级缓存，而没有使用ehcache缓存-->
+     <cache type="org.mybatis.caches.ehcache.EhcacheCache"/> 
+   <!--创建简单的sql操作， 测试一级缓存查询和二级缓存查询 。一级缓存是mybatis自带的sqlsession缓存，无需任何配置；二级缓存需要手动开启。-->
+   <!-- 一级缓存是sqlsession级别的；二级缓存是Mapper级别的，按照命名空间名namespace划分 -->
+   <select id="findOrder" parameterType="int" resultType="Orders"><!--  useCache="false" 可以设置关闭该sql的二级缓存 -->
+      SELECT * FROM orders o WHERE o.`id`=#{id}; 
+   </select>
+   
+   <insert id="saveOrders" parameterType="Orders" >
+   INSERT INTO orders
+		VALUES(#{id},#{userId},#{number},#{createTime},#{note})
+   </insert>
+   
+   
+
+</mapper>
